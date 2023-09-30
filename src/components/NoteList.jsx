@@ -5,7 +5,7 @@ const NoteList = ({ noteDatas, onDelete, onArchive }) => {
     return (
         <div className="notes-list">
             {noteDatas.length === 0 ? (
-                <p>Note is empty</p>
+                <p className="notes-list__empty-message">Note is empty</p>
             ) : (
                 noteDatas.map((noteData) => (
                     <NoteItem

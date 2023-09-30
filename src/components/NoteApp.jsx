@@ -64,10 +64,9 @@ class NoteApp extends React.Component {
                     {
                         id: +new Date(),
                         title,
-                        date,
                         body,
                         archived: false,
-                        createdAt: showFormattedDate(new Date()),
+                        createdAt: new Date,
                     }
                 ]
             }
