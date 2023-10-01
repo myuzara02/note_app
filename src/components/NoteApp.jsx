@@ -1,11 +1,8 @@
-import React from 'react'
-
-import { getInitialData, showFormattedDate } from '../utils'
-
-import NoteHeader from './NoteHeader'
-import NoteInput from './NoteInput'
-import NoteList from './NoteList'
-import NoteArsip from './NoteArsip'
+import React from 'react';
+import { getInitialData, showFormattedDate } from '../utils';
+import NoteHeader from './NoteHeader';
+import NoteInput from './NoteInput';
+import NoteList from './NoteList';
 
 class NoteApp extends React.Component {
     constructor(props) {
@@ -13,37 +10,13 @@ class NoteApp extends React.Component {
         this.state = {
             noteDatas: getInitialData(),
             searchKeyword: '',
-            archivedNotes: [],
         }
 
-        this.onDeleteHandler = this.onDeleteHandler.bind(this)
-        this.onArchiveHandler = this.onArchiveHandler.bind(this)
-        this.onSearchChange = this.onSearchChange.bind(this)
-        this.onDeleteHandler = this.onDeleteHandler.bind(this)
-        this.onAddNoteHandler = this.onAddNoteHandler.bind(this)
-    }
-
-
-    onArchiveHandler = (id) => {
-        const updatedNotes = this.state.noteDatas.map((note) =>
-            note.id === id ? { ...note, archived: true } : note
-        );
-        const archivedNote = this.state.noteDatas.find((note) => note.id === id);
-
-        this.setState((prevState) => ({
-            noteDatas: updatedNotes,
-            archivedNotes: [
-                ...prevState.archivedNotes,
-                {
-                    id: archivedNote.id,
-                    title: archivedNote.title,
-                    date: archivedNote.date,
-                    body: archivedNote.body,
-                    archived: true,
-                    createdAt: showFormattedDate(new Date()),
-                },
-            ],
-        }));
+        // Bind methods
+        this.onDeleteHandler = this.onDeleteHandler.bind(this);
+        this.onArchiveHandler = this.onArchiveHandler.bind(this);
+        this.onSearchChange = this.onSearchChange.bind(this);
+        this.onAddNoteHandler = this.onAddNoteHandler.bind(this);
     }
 
     onSearchChange = (event) => {
@@ -52,8 +25,19 @@ class NoteApp extends React.Component {
     }
 
     onDeleteHandler(id) {
-        const noteDatas = this.state.noteDatas.filter(noteData => noteData.id !== id)
-        this.setState({ noteDatas })
+        const noteDatas = this.state.noteDatas.filter(noteData => noteData.id !== id);
+        this.setState({ noteDatas });
+    }
+
+    onArchiveHandler(id) {
+        const updatedNotes = this.state.noteDatas.map((note) => {
+            if (note.id === id) {
+                return { ...note, archived: !note.archived };
+            }
+            return note;
+        });
+
+        this.setState({ noteDatas: updatedNotes });
     }
 
     onAddNoteHandler({ title, body, date }) {
@@ -66,7 +50,7 @@ class NoteApp extends React.Component {
                         title,
                         body,
                         archived: false,
-                        createdAt: new Date,
+                        createdAt: new Date(),
                     }
                 ]
             }
@@ -74,12 +58,15 @@ class NoteApp extends React.Component {
     }
 
     render() {
-        const { noteDatas, searchKeyword, archivedNotes } = this.state;
+        const { noteDatas, searchKeyword } = this.state;
 
-        const filteredNotes = noteDatas.filter((note) =>
+        // Filter active and archived notes
+        const activeNotes = noteDatas.filter((note) => !note.archived);
+        const archivedNotes = noteDatas.filter((note) => note.archived);
+
+        const filteredNotes = activeNotes.filter((note) =>
             note.title.toLowerCase().includes(searchKeyword.toLowerCase())
         );
-
 
         return (
             <div>
@@ -88,14 +75,14 @@ class NoteApp extends React.Component {
                     <NoteInput onAddNote={(note) => this.onAddNoteHandler(note)} />
 
                     <h2>Catatan Aktif</h2>
-                    <NoteList noteDatas={filteredNotes} onDelete={this.onDeleteHandler} onArchive={this.onArchive} />
+                    <NoteList noteDatas={filteredNotes} onDelete={this.onDeleteHandler} onArchive={this.onArchiveHandler} />
 
                     <h2>Arsip</h2>
-                    <NoteArsip archivedNotes={archivedNotes} />
+                    <NoteList noteDatas={archivedNotes} onDelete={this.onDeleteHandler} onArchive={this.onArchiveHandler} />
                 </div>
             </div>
         )
     }
 }
 
-export default NoteApp
+export default NoteApp;

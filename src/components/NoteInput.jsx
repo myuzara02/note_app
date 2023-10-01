@@ -15,10 +15,10 @@ class NoteInput extends Component {
 
     }
 
-    onTitleChangeHandler = (e) => {
+    onTitleChangeHandler = (event) => {
         this.setState({
-            title: e.target.value,
-            titleLength: e.target.value.length,
+            title: event.target.value,
+            titleLength: event.target.value.length,
         })
 
     };
